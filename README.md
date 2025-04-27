@@ -42,3 +42,7 @@ auth-system-backend/
 ├── .env                 # Variables de entorno
 ├── tsconfig.json        # Configuración de TypeScript
 └── package.json
+
+## 🐳 Docker
+
+Este proyecto también puede ejecutarse dentro de un contenedor Docker para facilitar el despliegue y la portabilidad.
