@@ -18,25 +18,23 @@ interface JwtPayload {
  * @param next - Función que continúa al siguiente middleware
  * @returns Una respuesta 401 si el token no existe o es inválido
 */
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
     const authHeader = req.headers.authorization;
 
-    // Verifica si se envió el token con el prefijo "Bearer"
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'Token no proporcionado' });
+        res.status(401).json({ message: 'Token no proporcionado' });
+        return;
     }
 
-    const token = authHeader.split(' ')[1]; // Extrae el token del header
+    const token = authHeader.split(' ')[1];
 
     try {
-        // Verifica y decodifica el token
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-
-        // @ts-ignore: Se agrega información del usuario al objeto req
+        // @ts-ignore
         req.user = decoded;
-
-        next(); // Continúa con la ejecución de la ruta
+        next();
     } catch (error) {
         res.status(401).json({ message: 'Token inválido o expirado' });
+        return;
     }
 };

@@ -10,15 +10,15 @@ import { Request, Response, NextFunction } from 'express';
  * router.get('/ruta-protegida', authenticate, authorize('admin', 'moderador'), handler);
 */
 export const authorize = (...roles: string[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        // @ts-ignore: Se espera que `req.user` haya sido agregado por `authenticate`
+    return (req: Request, res: Response, next: NextFunction): void => {
+        // @ts-ignore
         const userRole = req.user?.role;
 
-        // Verifica si el rol del usuario está en la lista de roles permitidos
         if (!roles.includes(userRole)) {
-            return res.status(403).json({ message: 'Acceso denegado: rol no autorizado' });
+            res.status(403).json({ message: 'Acceso denegado: rol no autorizado' });
+            return; // Importante: cortar la ejecución sin retornar un valor
         }
 
-        next(); // Usuario autorizado, continúa con la ejecución
+      next(); // Continua si está autorizado
     };
 };

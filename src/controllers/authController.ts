@@ -13,19 +13,21 @@ import { registerUser, loginUser } from '../services/authService';
  * {
  *   "name": "Nombre del usuario",
  *   "email": "email@ejemplo.com",
- *   "password": "contraseña123"
+ *   "password": "contraseña123",
+ *   "role": "admin" // (opcional - por defecto 'user')
  * }
 */
 export const register = async (req: Request, res: Response) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     try {
-        const { token, user } = await registerUser(name, email, password);
+        const { token, user } = await registerUser(name, email, password, role);
         res.status(201).json({ token, user });
     } catch (error: any) {
         res.status(400).json({ message: error.message });
     }
 };
+
 
 /*
  * Controlador que maneja el inicio de sesión del usuario.

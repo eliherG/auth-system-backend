@@ -11,7 +11,7 @@ import jwt from 'jsonwebtoken';
  * @returns Un objeto que contiene el token JWT y el usuario creado
  * @throws Error si el usuario ya existe
 */
-export const registerUser = async (name: string, email: string, password: string) => {
+export const registerUser = async (name: string, email: string, password: string, role: string ) => {
     // Verifica si ya hay un usuario registrado con el mismo email
     const existingUser = await User.findOne({ email });
     if (existingUser) throw new Error('El usuario ya existe');
@@ -21,7 +21,7 @@ export const registerUser = async (name: string, email: string, password: string
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Crea un nuevo documento de usuario con la contraseña hasheada
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ name, email, password: hashedPassword, role });
     await newUser.save();
 
     // Genera un token JWT con el ID del usuario y su rol

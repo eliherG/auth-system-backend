@@ -1,12 +1,16 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import authRoutes from './routes/authRoutes'; // Importa las rutas de autenticación
+import privateRoutes from './routes/privateRoutes'; // Importa las rutas privadas
 
 dotenv.config(); // Carga las variables de entorno desde el archivo .env
 
 const app = express();
 
 app.use(express.json()); // Permite recibir datos en formato JSON
+app.use('/private', privateRoutes); // Usa las rutas privadas
+app.use('/auth', authRoutes); // Usa las rutas de autenticación
 
 /*
  * Ruta base de prueba
