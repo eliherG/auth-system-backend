@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import morgan from 'morgan'; // Importa el módulo morgan para registrar las solicitudes HTTP
 import cors from 'cors'; // Importa el módulo cors para habilitar CORS
 import authRoutes from './routes/authRoutes'; // Importa las rutas de autenticación
 import privateRoutes from './routes/privateRoutes'; // Importa las rutas privadas
@@ -9,10 +10,13 @@ dotenv.config(); // Carga las variables de entorno desde el archivo .env
 
 const app = express();
 
+app.use(morgan('dev')); // Usa morgan para registrar las solicitudes HTTP en modo 'dev'
 app.use(cors()); // Habilita CORS para todas las rutas
 app.use(express.json()); // Permite recibir datos en formato JSON
-app.use('/private', privateRoutes); // Usa las rutas privadas
+app.use(express.urlencoded({ extended: true })); // Permite recibir datos en formato URL-encoded
+
 app.use('/auth', authRoutes); // Usa las rutas de autenticación
+app.use('/private', privateRoutes); // Usa las rutas privadas
 
 /*
  * Ruta base de prueba

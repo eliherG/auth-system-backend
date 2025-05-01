@@ -1,8 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 
+
 /*
- * Interface para representar los datos contenidos en el JWT.
+ * Representa los datos que se esperan dentro del JWT.
+ * @property id - ID único del usuario
+ * @property role - Rol del usuario (por ejemplo: 'admin', 'user')
 */
 interface JwtPayload {
     id: string;      // ID del usuario
@@ -10,15 +13,31 @@ interface JwtPayload {
 }
 
 /*
- * Middleware que verifica si el usuario está autenticado mediante un token JWT.
- * Si el token es válido, añade los datos del usuario (id y rol) al objeto `req`.
- * 
- * @param req - Objeto de solicitud (Request)
- * @param res - Objeto de respuesta (Response)
- * @param next - Función que continúa al siguiente middleware
- * @returns Una respuesta 401 si el token no existe o es inválido
+ * Extiende el objeto `Request` de Express para incluir información del usuario autenticado.
+ * Esto permite que otros middlewares o controladores accedan a `req.user`.
 */
-export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
+interface AuthenticatedRequest extends Request {
+    user?: JwtPayload; // Datos del usuario extraídos del JWT
+}
+
+/*
+ * Middleware de autenticación que verifica la validez de un token JWT en la cabecera `Authorization`.
+ * 
+ * Si el token es válido, extrae los datos del usuario y los agrega al objeto `req`.
+ * Si no hay token o este es inválido/expirado, retorna un error 401.
+ *
+ * @function authenticate
+ * @param {AuthenticatedRequest} req - Objeto de solicitud extendido con posible propiedad `user`
+ * @param {Response} res - Objeto de respuesta
+ * @param {NextFunction} next - Función para continuar al siguiente middleware
+ * 
+ * @returns {void} No retorna directamente, pero puede cortar la cadena de middlewares con una respuesta 401
+ *
+ * @example
+ * // Header esperado:
+ * Authorization: Bearer <token>
+*/
+export const authenticate: RequestHandler = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -30,7 +49,6 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-        // @ts-ignore
         req.user = decoded;
         next();
     } catch (error) {
