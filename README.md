@@ -46,3 +46,14 @@ auth-system-backend/
 ## 🐳 Docker
 
 Este proyecto también puede ejecutarse dentro de un contenedor Docker para facilitar el despliegue y la portabilidad.
+
+### 📦 Requisitos previos
+
+- Tener [Docker] y [Docker Compose] instalados.
+
+### 🔧 Construcción y ejecución con Docker Compose
+
+Desde la raíz del proyecto, ejecuta el siguiente comando para construir y levantar los servicios definidos en `docker-compose.yml`:
+
+```bash
+docker compose up --build
